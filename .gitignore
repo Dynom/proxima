@@ -19,7 +19,7 @@
 
 # End of https://www.gitignore.io/api/go
 
-imaginary-reverse-proxy
+proxima
 .idea
 debug
 build
