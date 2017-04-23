@@ -13,7 +13,7 @@ import (
 
 	"fmt"
 
-	"github.com/Pimmr/proxima/handlers"
+	"github.com/Dynom/proxima/handlers"
 	"github.com/go-kit/kit/log"
 	"github.com/juju/ratelimit"
 )
