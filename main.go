@@ -19,12 +19,13 @@ import (
 )
 
 var (
-	allowedHosts           argumentList
-	allowedImaginaryParams string
-	imaginaryURL           string
-	listenPort             int64
-	bucketRate             float64
-	bucketSize             int64
+	allowedHosts            argumentList
+	allowedImaginaryParams  string
+	allowedImaginaryActions string
+	imaginaryURL            string
+	listenPort              int64
+	bucketRate              float64
+	bucketSize              int64
 
 	Version = "dev"
 	logger  = log.With(
@@ -52,6 +53,7 @@ func init() {
 	flag.Float64Var(&bucketRate, "bucket-rate", 20, "Rate limiter bucket fill rate (req/s)")
 	flag.Int64Var(&bucketSize, "bucket-size", 500, "Rate limiter bucket size (burst capacity)")
 	flag.StringVar(&allowedImaginaryParams, "allowed-params", "", "A comma seperated list of parameters allows to be sent upstream. If empty, everything is allowed.")
+	flag.StringVar(&allowedImaginaryActions, "allowed-actions", "", "A comma seperated list of actions allows to be sent upstream. If empty, everything is allowed.")
 
 }
 
@@ -108,6 +110,15 @@ func decorateHandler(h http.Handler, b *ratelimit.Bucket) http.Handler {
 			handlers.NewAllowedParams(
 				logger,
 				strings.Split(allowedImaginaryParams, ","),
+			))
+	}
+
+	if allowedImaginaryActions != "" {
+		decorators = append(
+			decorators,
+			handlers.NewAllowedActions(
+				logger,
+				strings.Split(allowedImaginaryActions, ","),
 			))
 	}
 
