@@ -8,7 +8,7 @@ import (
 	"github.com/juju/ratelimit"
 )
 
-func NewRateLimitHandler(b *ratelimit.Bucket, l log.Logger) func(h http.Handler) http.Handler {
+func NewRateLimitHandler(l log.Logger, b *ratelimit.Bucket) func(h http.Handler) http.Handler {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			d := b.Take(1)
