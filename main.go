@@ -7,8 +7,6 @@ import (
 	"os"
 	"time"
 
-	"strings"
-
 	"flag"
 
 	"fmt"
@@ -22,8 +20,8 @@ import (
 
 var (
 	allowedHosts            argumentList
-	allowedImaginaryParams  string
-	allowedImaginaryActions string
+	allowedImaginaryParams  argumentList
+	allowedImaginaryActions argumentList
 	imaginaryURL            string
 	pathSegmentToStrip      string
 	listenPort              int64
@@ -33,25 +31,14 @@ var (
 	Version = "dev"
 )
 
-type argumentList []string
-
-func (l argumentList) String() string {
-	return strings.Join(l, ",")
-}
-
-func (l *argumentList) Set(value string) error {
-	*l = append(*l, value)
-	return nil
-}
-
 func init() {
-	flag.Var(&allowedHosts, "allow-host", "Repeatable flag for hosts to allow for the URL parameter (e.g. \"d2dktr6aauwgqs.cloudfront.net\")")
+	flag.Var(&allowedHosts, "allow-host", "Repeatable flag (or a comma-separated list) for hosts to allow for the URL parameter (e.g. \"d2dktr6aauwgqs.cloudfront.net\")")
 	flag.StringVar(&imaginaryURL, "imaginary-url", "http://localhost:9000", "URL to imaginary (default: http://localhost:9000)")
 	flag.Int64Var(&listenPort, "listen-port", 8080, "Port to listen on")
 	flag.Float64Var(&bucketRate, "bucket-rate", 20, "Rate limiter bucket fill rate (req/s)")
 	flag.Int64Var(&bucketSize, "bucket-size", 500, "Rate limiter bucket size (burst capacity)")
-	flag.StringVar(&allowedImaginaryParams, "allowed-params", "", "A comma seperated list of parameters allows to be sent upstream. If empty, everything is allowed.")
-	flag.StringVar(&allowedImaginaryActions, "allowed-actions", "", "A comma seperated list of actions allows to be sent upstream. If empty, everything is allowed.")
+	flag.Var(&allowedImaginaryParams, "allowed-params", "A comma seperated list of parameters allows to be sent upstream. If empty, everything is allowed.")
+	flag.Var(&allowedImaginaryActions, "allowed-actions", "A comma seperated list of actions allows to be sent upstream. If empty, everything is allowed.")
 	flag.StringVar(&pathSegmentToStrip, "root-path-strip", "", "A section of the (left most) path to strip (e.g.: \"/static\"). Start with a /.")
 }
 
@@ -68,6 +55,8 @@ func main() {
 		"msg", "Starting.",
 		"version", Version,
 		"allowed_hosts", allowedHosts.String(),
+		"allowed_params", allowedImaginaryParams.String(),
+		"allowed_actions", allowedImaginaryActions.String(),
 		"imaginary_backend", imaginaryURL,
 	)
 
@@ -114,21 +103,21 @@ func decorateHandler(h http.Handler, b *ratelimit.Bucket, l log.Logger) http.Han
 		handlers.NewValidateURLParameter(l, allowedHosts),
 	}
 
-	if allowedImaginaryParams != "" {
+	if len(allowedImaginaryParams) > 0 {
 		decorators = append(
 			decorators,
 			handlers.NewAllowedParams(
 				l,
-				strings.Split(allowedImaginaryParams, ","),
+				allowedImaginaryParams,
 			))
 	}
 
-	if allowedImaginaryActions != "" {
+	if len(allowedImaginaryActions) > 0 {
 		decorators = append(
 			decorators,
 			handlers.NewAllowedActions(
 				l,
-				strings.Split(allowedImaginaryActions, ","),
+				allowedImaginaryActions,
 			))
 	}
 

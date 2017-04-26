@@ -25,7 +25,7 @@ func NewAllowedParams(l log.Logger, allowedParams []string) func(h http.Handler)
 			for p := range requestParams {
 				if _, exists := params[p]; !exists {
 					l.Log("error", "parameter is not white-listed", "parameter", p, "allowed", strings.Join(allowedParams, ","))
-					http.Error(w, "Unregisterd parameter", http.StatusNotAcceptable)
+					http.Error(w, "Unregisterd parameter", http.StatusBadRequest)
 					return
 				}
 			}
