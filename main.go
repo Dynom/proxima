@@ -67,7 +67,7 @@ func main() {
 	}
 
 	rlBucket := ratelimit.NewBucketWithRate(bucketRate, bucketSize)
-	proxy := newProxy(rURL, logger)
+	proxy := newProxy(logger, rURL)
 
 	s := &http.Server{
 		Addr:              fmt.Sprintf(":%d", listenPort),
@@ -82,7 +82,7 @@ func main() {
 	s.ListenAndServe()
 }
 
-func newProxy(backend *url.URL, l log.Logger) *httputil.ReverseProxy {
+func newProxy(l log.Logger, backend *url.URL) *httputil.ReverseProxy {
 	proxy := httputil.NewSingleHostReverseProxy(backend)
 	proxy.ErrorLog = stdlog.New(log.NewStdlibAdapter(l), "", stdlog.LstdFlags)
 	proxy.Transport = &http.Transport{
