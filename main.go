@@ -58,6 +58,7 @@ func main() {
 		"allowed_hosts", allowedHosts.String(),
 		"allowed_params", allowedImaginaryParams.String(),
 		"allowed_actions", allowedImaginaryActions.String(),
+		"path_to_strip", pathSegmentToStrip,
 		"imaginary_backend", imaginaryURL,
 	)
 
@@ -71,7 +72,7 @@ func main() {
 
 	s := &http.Server{
 		Addr:              fmt.Sprintf(":%d", listenPort),
-		Handler:           decorateHandler(proxy, rlBucket, logger),
+		Handler:           decorateHandler(logger, proxy, rlBucket),
 		ReadHeaderTimeout: 2 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,
@@ -99,7 +100,7 @@ func newProxy(l log.Logger, backend *url.URL) *httputil.ReverseProxy {
 
 type httpHandler func(h http.Handler) http.Handler
 
-func decorateHandler(h http.Handler, b *ratelimit.Bucket, l log.Logger) http.Handler {
+func decorateHandler(l log.Logger, h http.Handler, b *ratelimit.Bucket) http.Handler {
 	decorators := []httpHandler{
 		handlers.NewValidateURLParameter(l, allowedHosts),
 	}
@@ -135,7 +136,7 @@ func decorateHandler(h http.Handler, b *ratelimit.Bucket, l log.Logger) http.Han
 	decorators = append(
 		decorators,
 		handlers.NewIgnoreFaviconRequests(),
-		handlers.NewRateLimitHandler(b, l),
+		handlers.NewRateLimitHandler(l, b),
 	)
 
 	var handler http.Handler = h
