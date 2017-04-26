@@ -7,8 +7,6 @@ import (
 	"os"
 	"time"
 
-	"strings"
-
 	"flag"
 
 	"fmt"
@@ -20,7 +18,7 @@ import (
 
 var (
 	allowedHosts           argumentList
-	allowedImaginaryParams string
+	allowedImaginaryParams argumentList
 	imaginaryURL           string
 	listenPort             int64
 	bucketRate             float64
@@ -34,24 +32,13 @@ var (
 	)
 )
 
-type argumentList []string
-
-func (l argumentList) String() string {
-	return strings.Join(l, ",")
-}
-
-func (l *argumentList) Set(value string) error {
-	*l = append(*l, value)
-	return nil
-}
-
 func init() {
-	flag.Var(&allowedHosts, "allow-host", "Repeatable flag for hosts to allow for the URL parameter (e.g. \"d2dktr6aauwgqs.cloudfront.net\")")
+	flag.Var(&allowedHosts, "allow-host", "Repeatable flag (or a comma-separated list) for hosts to allow for the URL parameter (e.g. \"d2dktr6aauwgqs.cloudfront.net\")")
 	flag.StringVar(&imaginaryURL, "imaginary-url", "http://localhost:9000", "URL to imaginary (default: http://localhost:9000)")
 	flag.Int64Var(&listenPort, "listen-port", 8080, "Port to listen on")
 	flag.Float64Var(&bucketRate, "bucket-rate", 20, "Rate limiter bucket fill rate (req/s)")
 	flag.Int64Var(&bucketSize, "bucket-size", 500, "Rate limiter bucket size (burst capacity)")
-	flag.StringVar(&allowedImaginaryParams, "allowed-params", "", "A comma seperated list of parameters allows to be sent upstream. If empty, everything is allowed.")
+	flag.Var(&allowedImaginaryParams, "allowed-params", "A comma seperated list of parameters allows to be sent upstream. If empty, everything is allowed.")
 
 }
 
@@ -62,6 +49,7 @@ func main() {
 		"msg", "Starting.",
 		"version", Version,
 		"allowed_hosts", allowedHosts.String(),
+		"allowed_params", allowedImaginaryParams.String(),
 		"imaginary_backend", imaginaryURL,
 	)
 
@@ -102,12 +90,12 @@ func decorateHandler(h http.Handler, b *ratelimit.Bucket) http.Handler {
 		handlers.NewValidateURLParameter(logger, allowedHosts),
 	}
 
-	if allowedImaginaryParams != "" {
+	if len(allowedImaginaryParams) > 0 {
 		decorators = append(
 			decorators,
 			handlers.NewAllowedParams(
 				logger,
-				strings.Split(allowedImaginaryParams, ","),
+				allowedImaginaryParams,
 			))
 	}
 
