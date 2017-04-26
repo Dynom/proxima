@@ -23,7 +23,7 @@ func NewAllowedActions(l log.Logger, allowedActions []string) func(h http.Handle
 			action := r.URL.Path[1:]
 			if _, exists := actions[action]; !exists {
 				l.Log("error", "action is not white-listed", "action", action, "allowed", strings.Join(allowedActions, ","))
-				http.Error(w, "Unregisterd action", http.StatusNotAcceptable)
+				http.Error(w, "Unregisterd action", http.StatusBadRequest)
 				return
 			}
 
