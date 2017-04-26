@@ -21,7 +21,7 @@ func NewAllowedActions(l log.Logger, allowedActions []string) func(h http.Handle
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			action := r.URL.Path[1:]
-			if _, exists := actions[action]; !exists {
+			if _, exists := actions[action]; action != "" && !exists {
 				l.Log("error", "action is not white-listed", "action", action, "allowed", strings.Join(allowedActions, ","))
 				http.Error(w, "Unregisterd action", http.StatusBadRequest)
 				return
