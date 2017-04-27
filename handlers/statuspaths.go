@@ -7,19 +7,18 @@ import (
 )
 
 func NewHTTPStatusPaths(_ log.Logger, paths []string, httpStatus int) func(h http.Handler) http.Handler {
-	var actions = make(map[string]bool, len(paths))
+	var pathMap = make(map[string]bool, len(paths))
 	for _, p := range paths {
 		if p == "" {
 			continue
 		}
 
-		actions[p] = true
+		pathMap[p] = true
 	}
 
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			action := r.URL.Path[1:]
-			if _, exists := actions[action]; action != "" && exists {
+			if _, exists := pathMap[r.URL.Path]; exists {
 				w.WriteHeader(httpStatus)
 				return
 			}

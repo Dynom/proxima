@@ -13,7 +13,7 @@ func NewRateLimitHandler(l log.Logger, b *ratelimit.Bucket) func(h http.Handler)
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			d := b.Take(1)
 			if d > 0 {
-				l.Log("msg", "Rate limiting", "delay", d)
+				l.Log("msg", "Rate limiting", "delay", d, "remote_addr", r.RemoteAddr)
 				time.Sleep(d)
 			}
 

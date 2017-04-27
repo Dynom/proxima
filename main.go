@@ -135,7 +135,8 @@ func decorateHandler(l log.Logger, h http.Handler, b *ratelimit.Bucket) http.Han
 	decorators = append(
 		decorators,
 
-		handlers.NewHTTPStatusPaths(l, []string{"health", "health/"}, http.StatusOK),
+		// Defining "health" end-points.
+		handlers.NewHTTPStatusPaths(l, []string{"/health", "/"}, http.StatusOK),
 
 		// Ignoring common foo requests
 		handlers.NewHTTPStatusPaths(l, []string{"/favicon"}, http.StatusNotFound),
