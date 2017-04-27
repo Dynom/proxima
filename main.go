@@ -135,10 +135,11 @@ func decorateHandler(l log.Logger, h http.Handler, b *ratelimit.Bucket) http.Han
 	decorators = append(
 		decorators,
 
-		// Checking on the route "health", doesn't support path-segment-stripping!
 		handlers.NewHTTPStatusPaths(l, []string{"health", "health/"}, http.StatusOK),
 
-		handlers.NewIgnoreFaviconRequests(),
+		// Ignoring common foo requests
+		handlers.NewHTTPStatusPaths(l, []string{"/favicon"}, http.StatusNotFound),
+
 		handlers.NewRequestLogger(l),
 		handlers.NewRateLimitHandler(l, b),
 	)
