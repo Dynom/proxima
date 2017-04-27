@@ -49,7 +49,6 @@ func main() {
 	logger := log.With(
 		log.NewLogfmtLogger(os.Stderr),
 		"ts", log.DefaultTimestampUTC,
-		"caller", log.DefaultCaller,
 	)
 
 	logger.Log(
@@ -137,9 +136,10 @@ func decorateHandler(l log.Logger, h http.Handler, b *ratelimit.Bucket) http.Han
 		decorators,
 
 		// Checking on the route "health", doesn't support path-segment-stripping!
-		handlers.NewHTTPStatusPaths(l, []string{"health"}, http.StatusOK),
+		handlers.NewHTTPStatusPaths(l, []string{"health", "health/"}, http.StatusOK),
 
 		handlers.NewIgnoreFaviconRequests(),
+		handlers.NewRequestLogger(l),
 		handlers.NewRateLimitHandler(l, b),
 	)
 
