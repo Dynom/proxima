@@ -16,7 +16,7 @@ func NewValidateURLParameter(l log.Logger, allowedHosts []string) func(h http.Ha
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			queryURL := r.URL.Query().Get("url")
-			if !isValidQueryURL(queryURL, hosts) {
+			if queryURL != "" && !isValidQueryURL(queryURL, hosts) {
 				l.Log("error", "domain not registered", "QS", r.URL.RawQuery, "URL", queryURL)
 				http.Error(w, "Unregisterd domain", http.StatusNotAcceptable)
 				return
