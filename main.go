@@ -100,8 +100,15 @@ func newProxy(l log.Logger, backend *url.URL) *httputil.ReverseProxy {
 type httpHandler func(h http.Handler) http.Handler
 
 func decorateHandler(l log.Logger, h http.Handler, b *ratelimit.Bucket) http.Handler {
-	decorators := []httpHandler{
-		handlers.NewValidateURLParameter(l, allowedHosts),
+	decorators := []httpHandler{}
+
+	if len(allowedHosts) > 0 {
+		decorators = append(
+			decorators,
+			handlers.NewValidateURLParameter(
+				l,
+				allowedHosts,
+			))
 	}
 
 	if len(allowedImaginaryParams) > 0 {
