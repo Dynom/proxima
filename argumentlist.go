@@ -4,11 +4,19 @@ import "strings"
 
 type argumentList []string
 
-func (l argumentList) String() string {
-	return strings.Join(l, ",")
+func (al argumentList) String() string {
+	return strings.Join(al, ",")
 }
 
-func (a *argumentList) Set(value string) error {
-	*a = append(*a, strings.Split(value, ",")...)
+func (al argumentList) PrettyString() string {
+	if len(al) == 0 {
+		return "*"
+	}
+
+	return strings.Join(al, ",")
+}
+
+func (al *argumentList) Set(value string) error {
+	*al = append(*al, strings.Split(value, ",")...)
 	return nil
 }

@@ -54,9 +54,9 @@ func main() {
 	logger.Log(
 		"msg", "Starting.",
 		"version", Version,
-		"allowed_hosts", allowedHosts.String(),
-		"allowed_params", allowedImaginaryParams.String(),
-		"allowed_actions", allowedImaginaryActions.String(),
+		"allowed_hosts", allowedHosts.PrettyString(),
+		"allowed_params", allowedImaginaryParams.PrettyString(),
+		"allowed_actions", allowedImaginaryActions.PrettyString(),
 		"path_to_strip", pathSegmentToStrip,
 		"imaginary_backend", imaginaryURL,
 	)
