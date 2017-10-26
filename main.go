@@ -99,7 +99,7 @@ func newProxy(l log.Logger, backend *url.URL) *httputil.ReverseProxy {
 
 type httpHandler func(h http.Handler) http.Handler
 
-func decorateHandler(l log.Logger, h http.Handler, b *ratelimit.Bucket) http.Handler {
+func decorateHandler(l log.Logger, handler http.Handler, b *ratelimit.Bucket) http.Handler {
 	decorators := []httpHandler{}
 
 	if len(allowedHosts) > 0 {
@@ -152,7 +152,6 @@ func decorateHandler(l log.Logger, h http.Handler, b *ratelimit.Bucket) http.Han
 		handlers.NewRateLimitHandler(l, b),
 	)
 
-	var handler http.Handler = h
 	for _, d := range decorators {
 		handler = d(handler)
 	}
