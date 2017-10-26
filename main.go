@@ -33,8 +33,8 @@ var (
 
 func init() {
 	flag.Var(&allowedHosts, "allow-hosts", "Repeatable flag (or a comma-separated list) for hosts to allow for the URL parameter (e.g. \"d2dktr6aauwgqs.cloudfront.net\")")
-	flag.Var(&allowedImaginaryParams, "allowed-params", "A comma seperated list of parameters allows to be sent upstream. If empty, everything is allowed.")
-	flag.Var(&allowedImaginaryActions, "allowed-actions", "A comma seperated list of actions allows to be sent upstream. If empty, everything is allowed.")
+	flag.Var(&allowedImaginaryParams, "allowed-params", "A comma separated list of parameters allows to be sent upstream. If empty, everything is allowed.")
+	flag.Var(&allowedImaginaryActions, "allowed-actions", "A comma separated list of actions allows to be sent upstream. If empty, everything is allowed.")
 
 	flag.StringVar(&imaginaryURL, "imaginary-url", "http://localhost:9000", "URL to imaginary (default: http://localhost:9000)")
 	flag.Int64Var(&listenPort, "listen-port", 8080, "Port to listen on")
