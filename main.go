@@ -146,7 +146,7 @@ func decorateHandler(l log.Logger, h http.Handler, b *ratelimit.Bucket) http.Han
 		handlers.NewHTTPStatusPaths(l, []string{"/health", "/"}, http.StatusOK),
 
 		// Ignoring common foo requests
-		handlers.NewHTTPStatusPaths(l, []string{"/favicon"}, http.StatusNotFound),
+		handlers.NewHTTPStatusPaths(l, []string{"/favicon", "/favicon.ico"}, http.StatusNotFound),
 
 		handlers.NewRequestLogger(l),
 		handlers.NewRateLimitHandler(l, b),
